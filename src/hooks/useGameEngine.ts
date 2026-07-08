@@ -3,6 +3,11 @@ import { chooseAiMove } from '../game/ai';
 import { applyMove, createInitialState, legalMoves } from '../game/rules';
 import { CaptureMove, Difficulty, GameState, Move, PointId, Side, StepMove } from '../game/types';
 
+export interface HintMove {
+  from: PointId | null;
+  to: PointId;
+}
+
 export type GameMode =
   | { type: 'vsAI'; humanSide: Side; difficulty: Difficulty }
   | { type: 'passAndPlay' };
@@ -113,6 +118,13 @@ export function useGameEngine(mode: GameMode) {
     setAiThinking(false);
   }, []);
 
+  const getHint = useCallback((): HintMove | null => {
+    if (!humanTurn || state.winner || aiThinking) return null;
+    const move = chooseAiMove(state, 'hard');
+    if (!move) return null;
+    return { from: move.kind === 'place' ? null : move.from, to: move.to };
+  }, [humanTurn, state, aiThinking]);
+
   return {
     state,
     selected,
@@ -122,5 +134,6 @@ export function useGameEngine(mode: GameMode) {
     reset,
     isHumanTurn: humanTurn,
     aiThinking,
+    getHint,
   };
 }

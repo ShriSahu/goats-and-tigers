@@ -23,6 +23,9 @@
     },
     "experiments": {
       "baseUrl": "/goats-and-tigers"
-    }
+    },
+    "plugins": [
+      "expo-audio"
+    ]
   }
 }
